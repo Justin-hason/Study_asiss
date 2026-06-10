@@ -55,3 +55,6 @@ coverage/
 *.dll
 *.so
 *.dylib
+
+# 编译后的二进制文件
+**/bin/
