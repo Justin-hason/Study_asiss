@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package knowledge;
+option go_package = "knowledge-service/proto";
+
+service KnowledgeService {
+    rpc GetAccessibleDocs(GetAccessibleDocsRequest) returns (GetAccessibleDocsResponse);
+}
+
+message GetAccessibleDocsRequest {
+    string tenant_id = 1;
+    string user_id = 2;
+}
+
+message GetAccessibleDocsResponse {
+    repeated string doc_ids = 1;
+}
