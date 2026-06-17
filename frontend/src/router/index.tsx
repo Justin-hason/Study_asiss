@@ -11,6 +11,7 @@ import SearchErrorsPage from '../pages/SearchErrors';
 import OutlineNotesPage from '../pages/OutlineNotes';
 import StudyStatsPage from '../pages/StudyStats';
 import AdminPage from '../pages/Admin';
+import SearchPage from '../pages/search/SearchPage';
 import NotFoundPage from '../pages/NotFound';
 
 const routes: RouteObject[] = [
@@ -34,6 +35,7 @@ const routes: RouteObject[] = [
       { path: 'docs', element: <DocsPage /> },
       { path: 'knowledge-base', element: <KnowledgeBasePage /> },
       { path: 'qa', element: <QAPage /> },
+      { path: 'search', element: <SearchPage /> },
       { path: 'search-errors', element: <SearchErrorsPage /> },
       { path: 'outline-notes', element: <OutlineNotesPage /> },
       { path: 'study-stats', element: <StudyStatsPage /> },
