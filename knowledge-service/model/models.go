@@ -111,6 +111,13 @@ type CreateShareLinkResp struct {
 	URL       string    `json:"url"`
 }
 
+type ListDocumentsResp struct {
+	Items    []*Document `json:"items"`
+	Total    int         `json:"total"`
+	Page     int         `json:"page"`
+	PageSize int         `json:"page_size"`
+}
+
 type ErrorResp struct {
 	Error ErrorDetail `json:"error"`
 }
