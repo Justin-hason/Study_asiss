@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -166,6 +167,42 @@ func (h *Handler) ListTags(w http.ResponseWriter, r *http.Request) {
 		tags = []*model.Tag{}
 	}
 	writeJSON(w, http.StatusOK, tags)
+}
+
+func (h *Handler) ListDocuments(w http.ResponseWriter, r *http.Request) {
+	tenantID := middleware.GetTenantID(r.Context())
+	q := r.URL.Query()
+
+	page := 1
+	if v, err := strconv.Atoi(q.Get("page")); err == nil && v > 0 {
+		page = v
+	}
+	pageSize := 20
+	if v, err := strconv.Atoi(q.Get("page_size")); err == nil && v > 0 {
+		pageSize = v
+	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	keyword := q.Get("keyword")
+	folderID := q.Get("folder_id")
+
+	docs, total, err := h.pg.ListDocuments(tenantID, folderID, keyword, page, pageSize)
+	if err != nil {
+		log.Printf("ListDocuments error: %v", err)
+		writeError(w, http.StatusInternalServerError, "INTERNAL", "failed to list documents")
+		return
+	}
+	if docs == nil {
+		docs = []*model.Document{}
+	}
+	writeJSON(w, http.StatusOK, model.ListDocumentsResp{
+		Items:    docs,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	})
 }
 
 func (h *Handler) AddDocumentTag(w http.ResponseWriter, r *http.Request) {

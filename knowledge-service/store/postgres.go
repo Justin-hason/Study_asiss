@@ -499,22 +499,41 @@ func (s *PostgresStore) CreateDocument(doc *model.Document) error {
 	).Scan(&doc.ID, &doc.CreatedAt, &doc.UpdatedAt)
 }
 
-func (s *PostgresStore) ListDocuments(tenantID, folderID string) ([]*model.Document, error) {
+func (s *PostgresStore) ListDocuments(tenantID, folderID, keyword string, page, pageSize int) ([]*model.Document, int, error) {
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 {
+		pageSize = 20
+	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
+	offset := (page - 1) * pageSize
 	rows, err := s.db.Query(
-		`SELECT id, tenant_id, folder_id, name, file_path, file_size, file_type, current_version_id, uploader_id, status, created_at, updated_at
-		 FROM documents WHERE tenant_id = $1 AND ($2 = '' OR folder_id = $2::uuid) ORDER BY created_at DESC`,
-		tenantID, folderID)
+		`SELECT id, tenant_id, folder_id, name, file_path, file_size, file_type, current_version_id, uploader_id, status, created_at, updated_at,
+		        COUNT(*) OVER() AS total
+		 FROM documents WHERE tenant_id = $1
+		 AND ($2 = '' OR folder_id = $2::uuid)
+		 AND ($3 = '' OR name ILIKE '%' || $3 || '%')
+		 ORDER BY created_at DESC LIMIT $4 OFFSET $5`,
+		tenantID, folderID, keyword, pageSize, offset)
 	if err != nil {
-		return nil, fmt.Errorf("list documents: %w", err)
+		return nil, 0, fmt.Errorf("list documents: %w", err)
 	}
 	defer rows.Close()
 	var docs []*model.Document
+	var total int
 	for rows.Next() {
 		d := &model.Document{}
-		if err := rows.Scan(&d.ID, &d.TenantID, &d.FolderID, &d.Name, &d.FilePath, &d.FileSize, &d.FileType, &d.CurrentVersionID, &d.UploaderID, &d.Status, &d.CreatedAt, &d.UpdatedAt); err != nil {
-			return nil, fmt.Errorf("scan document: %w", err)
+		var rowTotal int
+		if err := rows.Scan(&d.ID, &d.TenantID, &d.FolderID, &d.Name, &d.FilePath, &d.FileSize, &d.FileType, &d.CurrentVersionID, &d.UploaderID, &d.Status, &d.CreatedAt, &d.UpdatedAt, &rowTotal); err != nil {
+			return nil, 0, fmt.Errorf("scan document: %w", err)
+		}
+		if total == 0 {
+			total = rowTotal
 		}
 		docs = append(docs, d)
 	}
-	return docs, nil
+	return docs, total, nil
 }

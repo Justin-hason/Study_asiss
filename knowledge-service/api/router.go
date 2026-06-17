@@ -29,6 +29,8 @@ func NewRouter(h *Handler, jwtSecret string) http.Handler {
 		r.Post("/tags", h.CreateTag)
 		r.Get("/tags", h.ListTags)
 
+		r.Get("/documents", h.ListDocuments)
+
 		r.Post("/documents/{id}/tags/{tagId}", h.AddDocumentTag)
 		r.Delete("/documents/{id}/tags/{tagId}", h.RemoveDocumentTag)
 		r.Put("/documents/{id}/permissions", h.SetPermissions)
