@@ -10,7 +10,10 @@ import QAPage from '../pages/QA';
 import SearchErrorsPage from '../pages/SearchErrors';
 import OutlineNotesPage from '../pages/OutlineNotes';
 import StudyStatsPage from '../pages/StudyStats';
+import PracticePage from '../pages/Practice';
 import AdminPage from '../pages/Admin';
+import MyDocsPage from '../pages/MyDocs';
+import KnowledgeReportsPage from '../pages/KnowledgeReports';
 import NotFoundPage from '../pages/NotFound';
 
 const routes: RouteObject[] = [
@@ -31,13 +34,30 @@ const routes: RouteObject[] = [
     ),
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'docs', element: <DocsPage /> },
+      {
+        path: 'docs',
+        element: (
+          <AuthGuard allowedRoles={['admin', 'auditor']}>
+            <DocsPage />
+          </AuthGuard>
+        ),
+      },
       { path: 'knowledge-base', element: <KnowledgeBasePage /> },
+      { path: 'my-docs', element: <MyDocsPage /> },
+      { path: 'knowledge-reports', element: <KnowledgeReportsPage /> },
       { path: 'qa', element: <QAPage /> },
       { path: 'search-errors', element: <SearchErrorsPage /> },
       { path: 'outline-notes', element: <OutlineNotesPage /> },
       { path: 'study-stats', element: <StudyStatsPage /> },
-      { path: 'admin', element: <AdminPage /> },
+      { path: 'practice', element: <PracticePage /> },
+      {
+        path: 'admin',
+        element: (
+          <AuthGuard allowedRoles={['admin']}>
+            <AdminPage />
+          </AuthGuard>
+        ),
+      },
     ],
   },
   {

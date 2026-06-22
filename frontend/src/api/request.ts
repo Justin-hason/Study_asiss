@@ -4,7 +4,7 @@ const TOKEN_KEY = 'token';
 
 const request = axios.create({
   baseURL: '/api/v1',
-  timeout: 15000,
+  timeout: 120000,
 });
 
 request.interceptors.request.use(
