@@ -1,0 +1,420 @@
+@startuml ER_EA_Diagram
+skinparam backgroundColor #FEFEFE
+skinparam handwritten false
+skinparam defaultFontSize 10
+skinparam defaultFontName "Microsoft YaHei"
+skinparam entityBackgroundColor #E3F2FD
+skinparam entityBorderColor #1565C0
+skinparam entityBorderThickness 2
+skinparam attributeBackgroundColor #FFF3E0
+skinparam attributeBorderColor #E65100
+skinparam attributeBorderThickness 1
+skinparam relationshipBackgroundColor #E8F5E9
+skinparam relationshipBorderColor #2E7D32
+skinparam relationshipBorderThickness 2
+
+title Study_asiss系统 - ER-EA图
+
+top to bottom direction
+
+package "用户管理" #BBDEFB {
+  entity User {
+    * id <<PK>>
+    * username
+    * password_hash
+    --
+    * email
+    * role
+    * tenant_id
+    * created_at
+    * updated_at
+  }
+
+  entity Folder {
+    * id <<PK>>
+    * tenant_id
+    * name
+    --
+    * parent_id <<FK>>
+    * sort_order
+    * created_at
+    * updated_at
+  }
+
+  entity Tag {
+    * id <<PK>>
+    * tenant_id
+    * name
+    --
+    * color
+    * created_at
+  }
+
+  entity KnowledgePoint {
+    * id <<PK>>
+    * name
+    --
+    * parent_id <<FK>>
+    * description
+    * category
+    * created_at
+    * updated_at
+  }
+}
+
+package "文档管理" #C8E6C9 {
+  entity Document {
+    * id <<PK>>
+    * tenant_id
+    * folder_id <<FK>>
+    * user_id <<FK>>
+    * name
+    * mime_type
+    * file_path
+    * size
+    * status
+    --
+    * current_version_id
+    * markdown_content
+    * created_at
+    * updated_at
+  }
+
+  entity DocumentVersion {
+    * id <<PK>>
+    * doc_id <<FK>>
+    * version_number
+    * file_path
+    --
+    * uploader_id <<FK>>
+    * file_size
+    * change_note
+    * created_at
+  }
+
+  entity Chunk {
+    * id <<PK>>
+    * doc_id <<FK>>
+    * content
+    --
+    * position
+    * vector_id
+    * created_at
+  }
+
+  entity Permission {
+    * id <<PK>>
+    * doc_id <<FK>>
+    * user_id <<FK>>
+    * permission_level
+    --
+    * created_at
+  }
+
+  entity ShareLink {
+    * id <<PK>>
+    * doc_id <<FK>>
+    * token
+    * created_by <<FK>>
+    --
+    * password_hash
+    * expires_at
+    * permission
+    * created_at
+  }
+
+  entity ShareRequest {
+    * id <<PK>>
+    * doc_id <<FK>>
+    * user_id <<FK>>
+    * title
+    * status
+    --
+    * description
+    * reviewer_id <<FK>>
+    * review_comment
+    * reviewed_at
+    * created_at
+    * updated_at
+  }
+
+  entity PublicDocument {
+    * id <<PK>>
+    * doc_id <<FK>>
+    * title
+    * uploader_id <<FK>>
+    --
+    * description
+    * extracted_knowledge
+    * view_count
+    * download_count
+    * created_at
+    * updated_at
+  }
+}
+
+package "知识报告" #E1BEE7 {
+  entity KnowledgeExtraction {
+    * id <<PK>>
+    * doc_id <<FK>>
+    * user_id <<FK>>
+    * model_used
+    * status
+    --
+    * summary
+    * key_points
+    * entities
+    * categories
+    * created_at
+    * completed_at
+  }
+
+  entity KnowledgeReport {
+    * id <<PK>>
+    * tenant_id
+    * user_id <<FK>>
+    * title
+    * report_type
+    * model_used
+    * status
+    --
+    * description
+    * doc_ids
+    * doc_names
+    * content
+    * markdown_content
+    * summary
+    * is_saved_to_kb
+    * completed_at
+    * created_at
+    * updated_at
+  }
+
+  entity KnowledgeReportShareRequest {
+    * id <<PK>>
+    * report_id <<FK>>
+    * user_id <<FK>>
+    * title
+    * status
+    --
+    * description
+    * reviewer_id <<FK>>
+    * review_comment
+    * reviewed_at
+    * created_at
+    * updated_at
+  }
+
+  entity PublicKnowledgeReport {
+    * id <<PK>>
+    * report_id <<FK>>
+    * title
+    * uploader_id <<FK>>
+    --
+    * description
+    * summary
+    * markdown_content
+    * content
+    * view_count
+    * download_count
+    * created_at
+    * updated_at
+  }
+}
+
+package "练习系统" #FFECB3 {
+  entity WrongQuestion {
+    * id <<PK>>
+    * user_id <<FK>>
+    * question_text
+    * difficulty
+    * status
+    --
+    * original_answer
+    * correct_answer
+    * analysis
+    * source_doc_id <<FK>>
+    * source_page
+    * knowledge_points
+    * review_count
+    * last_review_time
+    * created_at
+    * updated_at
+  }
+
+  entity PracticeSession {
+    * id <<PK>>
+    * user_id <<FK>>
+    * title
+    * source_type
+    * status
+    --
+    * question_count
+    * correct_count
+    * source_id
+    * started_at
+    * completed_at
+    * created_at
+    * updated_at
+  }
+
+  entity PracticeQuestion {
+    * id <<PK>>
+    * session_id <<FK>>
+    * question_text
+    * question_type
+    * correct_answer
+    * difficulty
+    --
+    * options
+    * analysis
+    * knowledge_point
+    * source_doc_id <<FK>>
+    * created_at
+  }
+
+  entity PracticeRecord {
+    * id <<PK>>
+    * session_id <<FK>>
+    * question_id <<FK>>
+    * user_id <<FK>>
+    * is_correct
+    --
+    * user_answer
+    * score
+    * time_spent
+    * answered_at
+    * created_at
+  }
+}
+
+package "问答系统" #B2EBF2 {
+  entity QASession {
+    * id <<PK>>
+    * user_id <<FK>>
+    * session_id
+    --
+    * title
+    * created_at
+    * updated_at
+  }
+
+  entity QAMessage {
+    * id <<PK>>
+    * session_id <<FK>>
+    * role
+    * content
+    --
+    * timestamp
+  }
+}
+
+package "学习管理" #FCE4EC {
+  entity Outline {
+    * id <<PK>>
+    * user_id <<FK>>
+    * title
+    * content
+    --
+    * doc_id <<FK>>
+    * created_at
+    * updated_at
+  }
+
+  entity Note {
+    * id <<PK>>
+    * user_id <<FK>>
+    * content
+    --
+    * outline_id <<FK>>
+    * doc_id <<FK>>
+    * created_at
+    * updated_at
+  }
+
+  entity LearnEvent {
+    * id <<PK>>
+    * user_id <<FK>>
+    * kp_id
+    * event_type
+    --
+    * event_metadata
+    * created_at
+  }
+
+  entity Mastery {
+    * id <<PK>>
+    * user_id <<FK>>
+    * kp_id
+    * score
+    --
+    * last_review_time
+    * created_at
+    * updated_at
+  }
+
+  entity PushTask {
+    * id <<PK>>
+    * user_id <<FK>>
+    * kp_id
+    * due_time
+    * status
+    --
+    * created_at
+    * completed_at
+  }
+}
+
+entity document_tags {
+  * doc_id <<FK>>
+  * tag_id <<FK>>
+}
+
+User ||--o{ Document : uploads
+User ||--o{ KnowledgeReport : generates
+User ||--o{ PracticeSession : creates
+User ||--o{ WrongQuestion : has
+User ||--o{ QASession : starts
+User ||--o{ Outline : creates
+User ||--o{ Note : writes
+User ||--o{ LearnEvent : triggers
+User ||--o{ Mastery : owns
+User ||--o{ PushTask : receives
+
+Folder ||--o{ Folder : contains
+Folder ||--o{ Document : has
+
+Document ||--o{ DocumentVersion : has
+Document ||--o{ Chunk : contains
+Document ||--o{ Permission : has
+Document ||--o{ ShareLink : has
+Document ||--o{ ShareRequest : has
+Document ||--o{ KnowledgeExtraction : extracts
+Document ||--|| PublicDocument : publishes
+Document ||--o{ PracticeQuestion : sources
+
+Document }o--|| document_tags : tags
+Tag }o--|| document_tags : tagged
+
+PracticeSession ||--o{ PracticeQuestion : contains
+PracticeSession ||--o{ PracticeRecord : records
+
+PracticeQuestion ||--o{ PracticeRecord : answered
+
+KnowledgeReport ||--o{ KnowledgeReportShareRequest : requests
+KnowledgeReport ||--|| PublicKnowledgeReport : publishes
+
+QASession ||--o{ QAMessage : has
+
+Outline ||--o{ Note : has
+
+KnowledgePoint ||--o{ KnowledgePoint : contains
+
+WrongQuestion }o--|| Document : sourced_from
+
+KnowledgeReportShareRequest }o--|| User : reviewer
+ShareRequest }o--|| User : reviewer
+
+DocumentVersion }o--|| User : uploaded_by
+
+@enduml

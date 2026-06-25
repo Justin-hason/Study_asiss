@@ -1,0 +1,92 @@
+@startuml DFD_Level1
+skinparam backgroundColor #FEFEFE
+skinparam handwritten false
+skinparam defaultFontSize 10
+skinparam defaultFontName "Microsoft YaHei"
+skinparam rectangleBackgroundColor #E8F4FD
+skinparam rectangleBorderColor #1E88E5
+skinparam rectangleBorderThickness 2
+skinparam activityBackgroundColor #F3E5F5
+skinparam activityBorderColor #7B1FA2
+skinparam activityBorderThickness 2
+skinparam cloudBackgroundColor #E0E0E0
+skinparam cloudBorderColor #757575
+skinparam cloudBorderThickness 2
+
+title Study_asiss系统 - 一层DFD
+
+top to bottom direction
+
+rectangle "用户" as User #BBDEFB
+rectangle "管理员" as Admin #C8E6C9
+rectangle "审核员" as Auditor #FFECB3
+
+cloud "AI服务" as AI #E1BEE7
+cloud "搜索服务" as Search #FFCDD2
+cloud "文件存储" as FileStorage #DCEDC8
+
+rectangle "D1\n用户数据库" as D1 #FFE0B2
+rectangle "D2\n文档数据库" as D2 #FFE0B2
+rectangle "D3\n知识数据库" as D3 #FFE0B2
+rectangle "D4\n练习数据库" as D4 #FFE0B2
+rectangle "D5\n问答数据库" as D5 #FFE0B2
+
+rectangle "P1\n认证处理" as P1 #E8F4FD
+rectangle "P2\n文档处理" as P2 #E8F4FD
+rectangle "P3\n知识报告处理" as P3 #E8F4FD
+rectangle "P4\n问答处理" as P4 #E8F4FD
+rectangle "P5\n练习处理" as P5 #E8F4FD
+rectangle "P6\n知识库处理" as P6 #E8F4FD
+rectangle "P7\n统计处理" as P7 #E8F4FD
+
+User --> P1 : 登录信息
+P1 --> User : JWT令牌
+P1 <-> D1 : 用户数据
+
+User --> P2 : 上传文件
+P2 --> User : 文档信息
+P2 <-> D2 : 文档元数据
+P2 <-> FileStorage : 文件读写
+
+User --> P3 : 生成请求
+P3 --> User : 知识报告
+P3 <-> D3 : 报告内容
+P3 --> AI : 生成请求
+AI --> P3 : 生成结果
+
+User --> P4 : 问题
+P4 --> User : 答案
+P4 <-> D5 : 问答记录
+P4 --> AI : 生成请求
+AI --> P4 : 生成结果
+P4 --> Search : 搜索查询
+Search --> P4 : 搜索结果
+
+User --> P5 : 开始练习
+P5 --> User : 练习题\n结果
+P5 <-> D4 : 练习记录
+P5 --> AI : 生成请求
+AI --> P5 : 生成结果
+
+User --> P6 : 知识点查询
+P6 --> User : 知识点
+P6 <-> D3 : 知识点数据
+
+User --> P7 : 统计查询
+P7 --> User : 统计报告
+P7 <-> D1 : 用户信息
+P7 <-> D2 : 文档统计
+P7 <-> D4 : 练习统计
+
+Admin --> P3 : 审核请求
+P3 --> Admin : 审核结果
+
+Auditor --> P2 : 审核请求
+P2 --> Auditor : 审核结果
+
+Auditor --> P3 : 审核请求
+P3 --> Auditor : 审核结果
+
+P2 --> P6 : 文档内容
+
+@enduml
