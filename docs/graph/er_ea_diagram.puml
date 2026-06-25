@@ -3,6 +3,7 @@ skinparam backgroundColor #FEFEFE
 skinparam handwritten false
 skinparam defaultFontSize 10
 skinparam defaultFontName "Microsoft YaHei"
+skinparam linetype ortho
 skinparam entityBackgroundColor #E3F2FD
 skinparam entityBorderColor #1565C0
 skinparam entityBorderThickness 2
@@ -15,7 +16,7 @@ skinparam relationshipBorderThickness 2
 
 title Study_asiss系统 - ER-EA图
 
-top to bottom direction
+left to right direction
 
 package "用户管理" #BBDEFB {
   entity User {

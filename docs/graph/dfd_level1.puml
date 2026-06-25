@@ -3,6 +3,7 @@ skinparam backgroundColor #FEFEFE
 skinparam handwritten false
 skinparam defaultFontSize 10
 skinparam defaultFontName "Microsoft YaHei"
+skinparam linetype ortho
 skinparam rectangleBackgroundColor #E8F4FD
 skinparam rectangleBorderColor #1E88E5
 skinparam rectangleBorderThickness 2
@@ -39,54 +40,64 @@ rectangle "P5\n练习处理" as P5 #E8F4FD
 rectangle "P6\n知识库处理" as P6 #E8F4FD
 rectangle "P7\n统计处理" as P7 #E8F4FD
 
-User --> P1 : 登录信息
-P1 --> User : JWT令牌
-P1 <-> D1 : 用户数据
+User -[#1E88E5]-> P1 : 登录信息
+P1 -[#1E88E5]-> User : JWT令牌
+P1 -[#FFC107]-> D1 : 用户数据
+D1 -[#FFC107]-> P1 : 用户数据
 
-User --> P2 : 上传文件
-P2 --> User : 文档信息
-P2 <-> D2 : 文档元数据
-P2 <-> FileStorage : 文件读写
+User -[#1E88E5]-> P2 : 上传文件
+P2 -[#1E88E5]-> User : 文档信息
+P2 -[#FFC107]-> D2 : 文档元数据
+D2 -[#FFC107]-> P2 : 文档元数据
+P2 -[#8BC34A]-> FileStorage : 文件读写
+FileStorage -[#8BC34A]-> P2 : 文件读写
 
-User --> P3 : 生成请求
-P3 --> User : 知识报告
-P3 <-> D3 : 报告内容
-P3 --> AI : 生成请求
-AI --> P3 : 生成结果
+User -[#1E88E5]-> P3 : 生成请求
+P3 -[#1E88E5]-> User : 知识报告
+P3 -[#FFC107]-> D3 : 报告内容
+D3 -[#FFC107]-> P3 : 报告内容
+P3 -[#9C27B0]-> AI : 生成请求
+AI -[#9C27B0]-> P3 : 生成结果
 
-User --> P4 : 问题
-P4 --> User : 答案
-P4 <-> D5 : 问答记录
-P4 --> AI : 生成请求
-AI --> P4 : 生成结果
-P4 --> Search : 搜索查询
-Search --> P4 : 搜索结果
+User -[#1E88E5]-> P4 : 问题
+P4 -[#1E88E5]-> User : 答案
+P4 -[#FFC107]-> D5 : 问答记录
+D5 -[#FFC107]-> P4 : 问答记录
+P4 -[#9C27B0]-> AI : 生成请求
+AI -[#9C27B0]-> P4 : 生成结果
+P4 -[#F44336]-> Search : 搜索查询
+Search -[#F44336]-> P4 : 搜索结果
 
-User --> P5 : 开始练习
-P5 --> User : 练习题\n结果
-P5 <-> D4 : 练习记录
-P5 --> AI : 生成请求
-AI --> P5 : 生成结果
+User -[#1E88E5]-> P5 : 开始练习
+P5 -[#1E88E5]-> User : 练习题\n结果
+P5 -[#FFC107]-> D4 : 练习记录
+D4 -[#FFC107]-> P5 : 练习记录
+P5 -[#9C27B0]-> AI : 生成请求
+AI -[#9C27B0]-> P5 : 生成结果
 
-User --> P6 : 知识点查询
-P6 --> User : 知识点
-P6 <-> D3 : 知识点数据
+User -[#1E88E5]-> P6 : 知识点查询
+P6 -[#1E88E5]-> User : 知识点
+P6 -[#FFC107]-> D3 : 知识点数据
+D3 -[#FFC107]-> P6 : 知识点数据
 
-User --> P7 : 统计查询
-P7 --> User : 统计报告
-P7 <-> D1 : 用户信息
-P7 <-> D2 : 文档统计
-P7 <-> D4 : 练习统计
+User -[#1E88E5]-> P7 : 统计查询
+P7 -[#1E88E5]-> User : 统计报告
+P7 -[#FFC107]-> D1 : 用户信息
+D1 -[#FFC107]-> P7 : 用户信息
+P7 -[#FFC107]-> D2 : 文档统计
+D2 -[#FFC107]-> P7 : 文档统计
+P7 -[#FFC107]-> D4 : 练习统计
+D4 -[#FFC107]-> P7 : 练习统计
 
-Admin --> P3 : 审核请求
-P3 --> Admin : 审核结果
+Admin -[#4CAF50]-> P3 : 审核请求
+P3 -[#4CAF50]-> Admin : 审核结果
 
-Auditor --> P2 : 审核请求
-P2 --> Auditor : 审核结果
+Auditor -[#FF9800]-> P2 : 审核请求
+P2 -[#FF9800]-> Auditor : 审核结果
 
-Auditor --> P3 : 审核请求
-P3 --> Auditor : 审核结果
+Auditor -[#FF9800]-> P3 : 审核请求
+P3 -[#FF9800]-> Auditor : 审核结果
 
-P2 --> P6 : 文档内容
+P2 -[#00BCD4]-> P6 : 文档内容
 
 @enduml

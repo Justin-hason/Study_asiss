@@ -3,6 +3,7 @@ skinparam backgroundColor #FEFEFE
 skinparam handwritten false
 skinparam defaultFontSize 11
 skinparam defaultFontName "Microsoft YaHei"
+skinparam linetype ortho
 skinparam rectangleBackgroundColor #E8F4FD
 skinparam rectangleBorderColor #1E88E5
 skinparam rectangleBorderThickness 2
@@ -18,30 +19,31 @@ rectangle "用户" as User #BBDEFB
 rectangle "管理员" as Admin #C8E6C9
 rectangle "审核员" as Auditor #FFECB3
 
+rectangle "Study_asiss系统" as System0 #F3E5F5 {
+}
+
 rectangle "AI服务" as AI #E1BEE7
 rectangle "搜索服务" as Search #FFCDD2
 rectangle "文件存储" as File0 #DCEDC8
 rectangle "数据库" as DB0 #FFE0B2
 
-rectangle "Study_asiss系统" as System0 #F3E5F5 {
-}
+User -[#1E88E5]-> System0 : 登录信息\n上传文件\n问题\n答案
+System0 -[#1E88E5]-> User : JWT令牌\n文档信息\n答案\n统计报告
 
-User --> System0 : 登录信息\n上传文件\n问题\n答案
-System0 --> User : JWT令牌\n文档信息\n答案\n统计报告
+Admin -[#4CAF50]-> System0 : 审核请求\n管理操作
+System0 -[#4CAF50]-> Admin : 审核结果\n系统统计
 
-Admin --> System0 : 审核请求\n管理操作
-System0 --> Admin : 审核结果\n系统统计
+Auditor -[#FF9800]-> System0 : 审核操作
+System0 -[#FF9800]-> Auditor : 审核结果
 
-Auditor --> System0 : 审核操作
-System0 --> Auditor : 审核结果
+System0 -[#9C27B0]-> AI : 生成请求
+AI -[#9C27B0]-> System0 : 生成结果
 
-System0 --> AI : 生成请求
-AI --> System0 : 生成结果
+System0 -[#F44336]-> Search : 搜索查询
+Search -[#F44336]-> System0 : 搜索结果
 
-System0 --> Search : 搜索查询
-Search --> System0 : 搜索结果
+System0 -[#8BC34A]-> File0 : 文件读写
 
-System0 <-> File0 : 文件读写
-System0 <-> DB0 : 数据读写
+System0 -[#FFC107]-> DB0 : 数据读写
 
 @enduml
