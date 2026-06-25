@@ -1,0 +1,395 @@
+@startuml ER_Diagram
+skinparam backgroundColor #FEFEFE
+skinparam handwritten false
+skinparam defaultFontSize 11
+skinparam defaultFontName "Microsoft YaHei"
+
+entity User {
+  * id : String <<PK>>
+  * username : String(50)
+  * email : String(100)
+  * password_hash : String(255)
+  * role : String(20)
+  * tenant_id : String
+  --
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity Folder {
+  * id : String <<PK>>
+  * tenant_id : String
+  * parent_id : String <<FK>>
+  * name : String(100)
+  --
+  * sort_order : Integer
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity Document {
+  * id : String <<PK>>
+  * tenant_id : String
+  * folder_id : String <<FK>>
+  * user_id : String <<FK>>
+  * name : String(255)
+  * mime_type : String(255)
+  * file_path : String(500)
+  * size : Integer
+  * status : String(20)
+  --
+  * current_version_id : String
+  * markdown_content : Text
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity DocumentVersion {
+  * id : String <<PK>>
+  * doc_id : String <<FK>>
+  * version_number : Integer
+  * file_path : String(500)
+  * uploader_id : String <<FK>>
+  --
+  * file_size : Integer
+  * change_note : String(500)
+  * created_at : DateTime
+}
+
+entity Tag {
+  * id : String <<PK>>
+  * tenant_id : String
+  * name : String(50)
+  --
+  * color : String(7)
+  * created_at : DateTime
+}
+
+entity document_tags {
+  * doc_id : String <<FK>>
+  * tag_id : String <<FK>>
+}
+
+entity Chunk {
+  * id : String <<PK>>
+  * doc_id : String <<FK>>
+  * content : Text
+  --
+  * position : Integer
+  * vector_id : String
+  * created_at : DateTime
+}
+
+entity Permission {
+  * id : String <<PK>>
+  * doc_id : String <<FK>>
+  * user_id : String <<FK>>
+  * permission_level : String(20)
+  --
+  * created_at : DateTime
+}
+
+entity ShareLink {
+  * id : String <<PK>>
+  * doc_id : String <<FK>>
+  * token : String(64)
+  * created_by : String <<FK>>
+  --
+  * password_hash : String(255)
+  * expires_at : DateTime
+  * permission : String(20)
+  * created_at : DateTime
+}
+
+entity ShareRequest {
+  * id : String <<PK>>
+  * doc_id : String <<FK>>
+  * user_id : String <<FK>>
+  * title : String(255)
+  * status : String(20)
+  --
+  * description : Text
+  * reviewer_id : String <<FK>>
+  * review_comment : Text
+  * reviewed_at : DateTime
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity PublicDocument {
+  * id : String <<PK>>
+  * doc_id : String <<FK>>
+  * title : String(255)
+  * uploader_id : String <<FK>>
+  --
+  * description : Text
+  * extracted_knowledge : Text
+  * view_count : Integer
+  * download_count : Integer
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity KnowledgeExtraction {
+  * id : String <<PK>>
+  * doc_id : String <<FK>>
+  * user_id : String <<FK>>
+  * model_used : String(50)
+  * status : String(20)
+  --
+  * summary : Text
+  * key_points : JSON
+  * entities : JSON
+  * categories : JSON
+  * created_at : DateTime
+  * completed_at : DateTime
+}
+
+entity KnowledgeReport {
+  * id : String <<PK>>
+  * tenant_id : String
+  * user_id : String <<FK>>
+  * title : String(255)
+  * report_type : String(50)
+  * model_used : String(50)
+  * status : String(20)
+  --
+  * description : Text
+  * doc_ids : JSON
+  * doc_names : JSON
+  * content : JSON
+  * markdown_content : Text
+  * summary : Text
+  * is_saved_to_kb : Boolean
+  * completed_at : DateTime
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity KnowledgeReportShareRequest {
+  * id : String <<PK>>
+  * report_id : String <<FK>>
+  * user_id : String <<FK>>
+  * title : String(255)
+  * status : String(20)
+  --
+  * description : Text
+  * reviewer_id : String <<FK>>
+  * review_comment : Text
+  * reviewed_at : DateTime
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity PublicKnowledgeReport {
+  * id : String <<PK>>
+  * report_id : String <<FK>>
+  * title : String(255)
+  * uploader_id : String <<FK>>
+  --
+  * description : Text
+  * summary : Text
+  * markdown_content : Text
+  * content : JSON
+  * view_count : Integer
+  * download_count : Integer
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity WrongQuestion {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * question_text : Text
+  * difficulty : Integer
+  * status : String(20)
+  --
+  * original_answer : Text
+  * correct_answer : Text
+  * analysis : Text
+  * source_doc_id : String <<FK>>
+  * source_page : Integer
+  * knowledge_points : JSON
+  * review_count : Integer
+  * last_review_time : DateTime
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity PracticeSession {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * title : String(255)
+  * source_type : String(50)
+  * status : String(20)
+  --
+  * question_count : Integer
+  * correct_count : Integer
+  * source_id : String
+  * started_at : DateTime
+  * completed_at : DateTime
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity PracticeQuestion {
+  * id : String <<PK>>
+  * session_id : String <<FK>>
+  * question_text : Text
+  * question_type : String(50)
+  * correct_answer : Text
+  * difficulty : Integer
+  --
+  * options : JSON
+  * analysis : Text
+  * knowledge_point : String(255)
+  * source_doc_id : String <<FK>>
+  * created_at : DateTime
+}
+
+entity PracticeRecord {
+  * id : String <<PK>>
+  * session_id : String <<FK>>
+  * question_id : String <<FK>>
+  * user_id : String <<FK>>
+  * is_correct : Boolean
+  --
+  * user_answer : Text
+  * score : Float
+  * time_spent : Integer
+  * answered_at : DateTime
+  * created_at : DateTime
+}
+
+entity QASession {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * session_id : String(255)
+  --
+  * title : String(200)
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity QAMessage {
+  * id : String <<PK>>
+  * session_id : String <<FK>>
+  * role : String(20)
+  * content : Text
+  --
+  * timestamp : DateTime
+}
+
+entity Outline {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * title : String(200)
+  * content : JSON
+  --
+  * doc_id : String <<FK>>
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity Note {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * content : Text
+  --
+  * outline_id : String <<FK>>
+  * doc_id : String <<FK>>
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity LearnEvent {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * kp_id : String
+  * event_type : String(50)
+  --
+  * event_metadata : JSON
+  * created_at : DateTime
+}
+
+entity Mastery {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * kp_id : String
+  * score : Float
+  --
+  * last_review_time : DateTime
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+entity PushTask {
+  * id : String <<PK>>
+  * user_id : String <<FK>>
+  * kp_id : String
+  * due_time : DateTime
+  * status : String(20)
+  --
+  * created_at : DateTime
+  * completed_at : DateTime
+}
+
+entity KnowledgePoint {
+  * id : String <<PK>>
+  * name : String(255)
+  * parent_id : String <<FK>>
+  --
+  * description : Text
+  * category : String(100)
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+
+User ||--o{ Document : uploads
+User ||--o{ KnowledgeReport : generates
+User ||--o{ PracticeSession : creates
+User ||--o{ WrongQuestion : has
+User ||--o{ QASession : starts
+User ||--o{ Outline : creates
+User ||--o{ Note : writes
+User ||--o{ LearnEvent : triggers
+User ||--o{ Mastery : owns
+User ||--o{ PushTask : receives
+
+Folder ||--o{ Folder : contains
+Folder ||--o{ Document : has
+
+Document ||--o{ DocumentVersion : has
+Document ||--o{ Chunk : contains
+Document ||--o{ Permission : has
+Document ||--o{ ShareLink : has
+Document ||--o{ ShareRequest : has
+Document ||--o{ KnowledgeExtraction : extracts
+Document ||--|| PublicDocument : publishes
+Document ||--o{ PracticeQuestion : sources
+
+Document }o--|| document_tags : tags
+Tag }o--|| document_tags : tagged
+
+PracticeSession ||--o{ PracticeQuestion : contains
+PracticeSession ||--o{ PracticeRecord : records
+
+PracticeQuestion ||--o{ PracticeRecord : answered
+
+KnowledgeReport ||--o{ KnowledgeReportShareRequest : requests
+KnowledgeReport ||--|| PublicKnowledgeReport : publishes
+
+QASession ||--o{ QAMessage : has
+
+Outline ||--o{ Note : has
+
+KnowledgePoint ||--o{ KnowledgePoint : contains
+
+WrongQuestion }o--|| Document : sourced_from
+
+KnowledgeReportShareRequest }o--|| User : reviewer
+ShareRequest }o--|| User : reviewer
+
+DocumentVersion }o--|| User : uploaded_by
+
+@enduml
